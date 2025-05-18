@@ -1,0 +1,10 @@
+title: "IPCA - SRAS Project"
+name: "IPCA - SRAS Project"
+description: "High availability infrastructure on Rocky Linux"
+url: "https://pedrocardosossousa.github.io"
+baseurl: "/ipca-sras" # use "" if using root GitHub Pages
+repository: pedrocardososousa/ipca-srass
+
+theme: minimal-mistakes-jekyll
+plugins:
+  - jekyll-include-cache
