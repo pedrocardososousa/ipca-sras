@@ -15,18 +15,18 @@ This page documents the setup and configuration of a **3-node Galera cluster** r
 The Galera cluster provides **multi-master synchronous replication**, ensuring that all three nodes stay in sync and that one failure does not interrupt service.
 
 ```
-             +-------------------+
-             |  DB VIP           |
-             |  192.168.27.230   |
-             +--------+----------+
-                      |
-    +-----------------+------------------+
-    |                 |                  |
-+-----------+   +-----------+   +-----------+
-| Node 1    |   | Node 2    |   | Node 3    |
-| 27.231    |   | 27.232    |   | 27.233    |
-| MariaDB   |   | MariaDB   |   | MariaDB   |
-+-----------+   +-----------+   +-----------+
+                     +-------------------+
+                     |  DB VIP           |
+                     |  192.168.27.230   |
+                     +--------+----------+
+                              |
+    +-------------------------+--------------------+
+    |                         |                    |
++----------------+   +----------------+   +----------------+
+| Node 1         |   | Node 2         |   | Node 3         |
+| 192.168.27.231 |   | 192.168.27.232 |   | 192.168.27.233 |
+| MariaDB        |   | MariaDB        |   | MariaDB        |
++----------------+   +----------------+   +----------------+
 ```
 
 ---
@@ -43,6 +43,39 @@ The Galera cluster provides **multi-master synchronous replication**, ensuring t
 
 ## ⚙️ Configuration Steps
 
+### 0. Deploy from Template Server
+```bash
+sudo su
+nmtui
+hostnamectl set-hostname db01
+dnf update -y
+```
+
+Open ports using firewalld
+```bash
+firewall-cmd --zone=public --add-service=mysql --permanent
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+firewall-cmd --zone=public --add-port=4567/tcp --permanent
+firewall-cmd --zone=public --add-port=4568/tcp --permanent
+firewall-cmd --zone=public --add-port=4444/tcp --permanent
+firewall-cmd --zone=public --add-port=4006/tcp --permanent
+firewall-cmd --zone=public --add-port=4008/tcp --permanent
+firewall-cmd --zone=public --add-port=4567/udp --permanent
+firewall-cmd --reload
+```
+
+Adjust SELinux to allow MariaDB and Galera to run
+```bash
+dnf install policycoreutils-python-utils
+semanage port -a -t mysqld_port_t -p tcp 3306
+semanage port -a -t mysqld_port_t -p tcp 4567
+semanage port -a -t mysqld_port_t -p tcp 4568
+semanage port -a -t mysqld_port_t -p tcp 4444
+semanage port -a -t mysqld_port_t -p udp 4567
+semanage permissive -a mysqld_t
+```
+
+
 ### 1. Install MariaDB and Galera
 
 ```bash
@@ -54,17 +87,22 @@ Edit `/etc/my.cnf.d/galera.cnf` on all nodes:
 
 ```ini
 [mysqld]
-binlog_format=ROW
-default_storage_engine=InnoDB
+binlog_format=ROW 
+default_storage_engine=innodb
 innodb_autoinc_lock_mode=2
 bind-address=0.0.0.0
-wsrep_on=ON
-wsrep_provider=/usr/lib64/galera/libgalera_smm.so
-wsrep_cluster_name="my_cluster"
-wsrep_cluster_address="gcomm://192.168.27.231,192.168.27.232,192.168.27.233"
-wsrep_node_name=galera1
-wsrep_node_address=192.168.27.231
-wsrep_sst_method=rsync
+max_connections=1000 # Adjust based on expected load
+innodb_buffer_pool_size=1G  # Adjust based on available memory (recommended to set it to ~70-80% of available RAM)
+
+# Galera Cluster settings
+wsrep_on=ON # galera replication on
+wsrep_provider=/usr/lib64/galera-4/libgalera_smm.so  #galera library file path. 
+wsrep_cluster_name=cluster_poc 
+wsrep_cluster_address="gcomm://192.168.27.231,192.168.27.232,192.168.27.233" #allserverdetails
+wsrep_sst_method=rsync #data sync method.
+wsrep_sst_auth="root:abcd@1234"
+wsrep_node_address="192.168.27.231" # IP address of the node on which this configuration file resides.
+wsrep_node_name="db01" # hostname of the node on which this configuration file resides
 ```
 
 Update `wsrep_node_name` and `wsrep_node_address` on each node accordingly.
