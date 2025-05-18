@@ -67,6 +67,9 @@ firewall-cmd --reload
 Adjust SELinux to allow MariaDB and Galera to run
 ```bash
 dnf install policycoreutils-python-utils
+```
+
+```bash
 semanage port -a -t mysqld_port_t -p tcp 3306
 semanage port -a -t mysqld_port_t -p tcp 4567
 semanage port -a -t mysqld_port_t -p tcp 4568
