@@ -79,8 +79,38 @@ semanage permissive -a mysqld_t
 ### 1. Install MariaDB and Galera
 
 ```bash
-sudo dnf install mariadb-server galera -y
-sudo systemctl enable mariadb
+#dnf install mariadb-server galera -y
+#systemctl enable mariadb
+
+curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash
+
+#import rpm keys
+rpm --import https://supplychain.mariadb.com/MariaDB-Server-GPG-KEY
+
+#You can verify that the repositories have been added to the server by running:
+dnf repolist
+
+dnf install MariaDB-server MariaDB-client galera -y
+
+rpm -qa | grep -i mariadb
+rpm -qa | grep -i galera
+
+systemctl start mariadb
+systemctl status mariadb
+
+#Setup secure installation for MariaDB
+mariadb-secure-installation
+
+#Switch to UNIX socket authentication: 
+#If prompted, choosing 'yes' will use the Unix authentication plugin for connecting to the database server. 
+#However, the recommended authentication plugin is mysql_native_password. 
+#Therefore, you should enter 'n' when asked.
+
+#Change the root password? [Y/n]: Enter Y to set a strong password for the database root user.
+#Remove anonymous users? [Y/n]: Enter Y to remove anonymous access to the database server.
+#Disallow root login remotely? [Y/n]: Enter Y to disallow root login remotely, which enhances security.
+#Remove test database and access to it? [Y/n]: Enter Y to delete any unwanted test databases from the server.
+#Reload privilege tables now? [Y/n]: Enter Y to reload the privilege tables and apply the changes immediately to the database.
 ```
 
 Edit `/etc/my.cnf.d/galera.cnf` on all nodes:
@@ -114,6 +144,10 @@ Update `wsrep_node_name` and `wsrep_node_address` on each node accordingly.
 On the **first node only**:
 
 ```bash
+systemctl stop mariadb
+```
+
+```bash
 galera_new_cluster
 ```
 
@@ -126,6 +160,9 @@ sudo systemctl start mariadb
 Verify with:
 
 ```bash
+mysql -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mysql -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
+mysql -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
 mysql -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
 ```
 
