@@ -48,6 +48,13 @@ Set interface and hostname
 sudo su
 nmtui
 ```
+Basic information:
+Interface settings: `Manual`
+IP Address: `192.168.27.231/24`
+Gateway: `192.168.27.2`
+DNS: `192.168.27.2`
+IPV6: `Disable`
+Hostname: `db01`
 
 Update system
 ```bash
