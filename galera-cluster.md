@@ -194,6 +194,10 @@ On **each DB node**, install:
 dnf install keepalived -y
 ```
 
+```bash
+mv /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.ori
+vi /etc/keepalived/keepalived.conf
+```
 Example `/etc/keepalived/keepalived.conf` for Node 1 (MASTER):
 
 ```ini
