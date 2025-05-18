@@ -141,17 +141,19 @@ Update `wsrep_node_name` and `wsrep_node_address` on each node accordingly.
 
 ### 2. Initialize the Cluster
 
-On the **first node only**:
+On the all nodes:
 
 ```bash
 systemctl stop mariadb
 ```
 
+On the **first node only**:
+
 ```bash
 galera_new_cluster
 ```
 
-On the other nodes:
+On the all nodes:
 
 ```bash
 systemctl start mariadb
