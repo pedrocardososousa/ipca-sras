@@ -154,7 +154,7 @@ galera_new_cluster
 On the other nodes:
 
 ```bash
-sudo systemctl start mariadb
+systemctl start mariadb
 ```
 
 Verify with:
