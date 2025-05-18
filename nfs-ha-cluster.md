@@ -36,9 +36,10 @@ This guide outlines how to deploy a High Availability (HA) NFS cluster using DRB
 Install on both NFS servers:
 
 ```bash
-sudo dnf install -y nfs-utils drbd drbd-utils pacemaker pcs corosync lvm2
-sudo systemctl enable --now pcsd
-sudo passwd hacluster
+dnf config-manager --set-enabled highavailability
+dnf install -y nfs-utils drbd drbd-utils pacemaker pcs corosync lvm2
+systemctl enable --now pcsd
+passwd hacluster
 ```
 
 ---
