@@ -44,6 +44,18 @@ passwd hacluster
 
 ---
 
+Add a new disk with 5 GiB
+```bash
+fdisk -l
+
+#Disk /dev/nvme0n2: 5 GiB, 5368709120 bytes, 10485760 sectors
+#Disk model: VMware Virtual NVMe Disk
+#Units: sectors of 1 * 512 = 512 bytes
+#Sector size (logical/physical): 512 bytes / 512 bytes
+#I/O size (minimum/optimal): 512 bytes / 512 bytes
+```
+
+
 ## ⚙️ DRBD Setup
 
 Create `/etc/drbd.d/wordpress.res`:
@@ -52,13 +64,13 @@ Create `/etc/drbd.d/wordpress.res`:
 resource wordpress {
   on nfs-node1 {
     device    /dev/drbd0;
-    disk      /dev/sdb;
+    disk      /dev/nvme0n2;
     address   192.168.27.241:7788;
     meta-disk internal;
   }
   on nfs-node2 {
     device    /dev/drbd0;
-    disk      /dev/sdb;
+    disk      /dev/nvme0n2;
     address   192.168.27.242:7788;
     meta-disk internal;
   }
