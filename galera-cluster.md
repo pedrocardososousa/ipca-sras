@@ -188,7 +188,7 @@ Example `/etc/keepalived/keepalived.conf` for Node 1 (MASTER):
 ```ini
 vrrp_instance VI_DB {
     state MASTER
-    interface eth0
+    interface ens160
     virtual_router_id 60
     priority 100
     advert_int 1
