@@ -37,20 +37,24 @@ The Galera cluster provides **multi-master synchronous replication**, ensuring t
 - MariaDB 10.5+ with Galera support
 - Keepalived for VIP management
 - SELinux enabled (adjust ports if needed)
-- Passwordless SSH between nodes (optional for automation)
 
 ---
 
 ## ⚙️ Configuration Steps
 
 ### 0. Deploy from Template Server
+Set interface and hostname
 ```bash
 sudo su
 nmtui
-hostnamectl set-hostname db01
+```
+
+Update system
+```bash
 dnf update -y
 ```
 
+### 0. 🔐 Security Options
 Open ports using firewalld
 ```bash
 firewall-cmd --zone=public --add-service=mysql --permanent
@@ -222,17 +226,6 @@ Then ping `192.168.27.230` — it should still respond from another node.
 
 ---
 
-## 🔐 Security Notes
-
-- Use firewalld to allow port `3306`, and Galera ports `4567`, `4568`, `4444`
-- Configure SELinux to allow MySQL port access:
-
-```bash
-sudo semanage port -a -t mysqld_port_t -p tcp 4567
-```
-
----
-
 ## 🧭 Connection
 
 Applications (e.g., WordPress containers) connect to:
@@ -246,13 +239,5 @@ No need to worry about which node is online — Keepalived handles the routing.
 
 ---
 
-## ✅ Best Practices
-
-- Use `rsync` for SST (simpler than xtrabackup)
-- Monitor `wsrep_cluster_size` for health
-- Backup individual nodes regularly
-- Avoid large transactions; Galera replicates synchronously
-
----
 
 > 💡 *MariaDB Galera Cluster ensures zero-downtime database replication with automatic failover — a perfect fit for high-availability WordPress hosting.*
