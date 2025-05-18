@@ -57,18 +57,32 @@ fdisk -l
 
 
 ## ⚙️ DRBD Setup
+```bash
+mv /etc/drbd.d/global_common.conf /etc/drbd.d/global_common.conf.orig
+vi /etc/drbd.d/global_common.conf
+```
+```ini
+global {
+ usage-count  yes;
+}
+common {
+ net {
+  protocol C;
+ }
+}
+```
 
 Create `/etc/drbd.d/wordpress.res`:
 
 ```ini
 resource wordpress {
-  on nfs-node1 {
+  on nfs01 {
     device    /dev/drbd0;
     disk      /dev/nvme0n2;
     address   192.168.27.241:7788;
     meta-disk internal;
   }
-  on nfs-node2 {
+  on nfs02 {
     device    /dev/drbd0;
     disk      /dev/nvme0n2;
     address   192.168.27.242:7788;
