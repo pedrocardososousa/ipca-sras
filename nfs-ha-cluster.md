@@ -37,7 +37,13 @@ Install on both NFS servers:
 
 ```bash
 dnf config-manager --set-enabled highavailability
-dnf install -y nfs-utils drbd drbd-utils pacemaker pcs corosync lvm2
+#dnf install -y nfs-utils drbd drbd-utils pacemaker pcs corosync lvm2
+dnf install -y nfs-utils pacemaker pcs corosync lvm2
+
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+dnf update
+dnf install drbd drbd-utils -y
+
 systemctl enable --now pcsd
 passwd hacluster
 ```
@@ -55,6 +61,20 @@ fdisk -l
 #I/O size (minimum/optimal): 512 bytes / 512 bytes
 ```
 
+```bash
+semanage permissive -a drbd_t
+```
+
+Apply this rule on host: nfs01
+```bash
+firewall-cmd --permanent --add-rich-rule='rule family="ipv4"  source address="192.168.27.242" port port="7789" protocol="tcp" accept'
+firewall-cmd --reload
+```
+Apply this rule on host: nfs02
+```bash
+firewall-cmd --permanent --add-rich-rule='rule family="ipv4"  source address="192.168.27.241" port port="7789" protocol="tcp" accept'
+firewall-cmd --reload
+```
 
 ## ⚙️ DRBD Setup
 ```bash
