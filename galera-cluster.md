@@ -180,7 +180,7 @@ You should see `3`.
 On **each DB node**, install:
 
 ```bash
-sudo dnf install keepalived -y
+dnf install keepalived -y
 ```
 
 Example `/etc/keepalived/keepalived.conf` for Node 1 (MASTER):
@@ -195,7 +195,7 @@ vrrp_instance VI_DB {
 
     authentication {
         auth_type PASS
-        auth_pass secretpass
+        auth_pass Pass12345
     }
 
     virtual_ipaddress {
@@ -209,13 +209,13 @@ Change `state` and `priority` for other nodes (`BACKUP`, `90`, `80`, etc.).
 Enable Keepalived:
 
 ```bash
-sudo systemctl enable --now keepalived
+systemctl enable --now keepalived
 ```
 
 Test failover by stopping keepalived on one node:
 
 ```bash
-sudo systemctl stop keepalived
+systemctl stop keepalived
 ```
 
 Then ping `192.168.27.230` — it should still respond from another node.
