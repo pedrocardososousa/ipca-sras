@@ -14,7 +14,7 @@ This guide outlines the configuration of a two-node GlusterFS cluster to provide
 
 - **GlusterFS Node 1**: `192.168.27.241`
 - **GlusterFS Node 2**: `192.168.27.242`
-- **Volume Name**: `wordpressvol`
+- **Volume Name**: `volume1`
 - **Replica Count**: 2
 - **Mount Point on Clients**: `/mnt/wordpress-data`
 
