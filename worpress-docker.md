@@ -18,14 +18,6 @@ dnf update -y
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 ```
 
-### 🔧 Set SELinux to Permissive
-
-```bash
-vi /etc/selinux/config
-# Change this line:
-SELINUX=permissive
-```
-
 ---
 
 ## 🐳 Docker Installation
