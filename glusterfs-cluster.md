@@ -46,7 +46,9 @@ This guide outlines the configuration of a two-node GlusterFS cluster to provide
 
 We will create a new LVM logical volume that will be mounted on /data/glusterfs/vol0 on both of the cluster's servers:
 ```bash
-dnf install lvm2
+dnf install lvm2 -y
+```
+```bash
 pvcreate /dev/nvme0n2
 vgcreate vg_data /dev/nvme0n2
 lvcreate -l 100%FREE -n lv_data vg_data
