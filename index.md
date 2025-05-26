@@ -97,11 +97,11 @@ This setup consists of:
 ## 📚 Documentation
 
 Check the sidebar for:
-
-- [Load Balancer Setup](./load-balancer.html)
-- [Docker WordPress Deployment](./wordpress-docker.html)
-- [Galera Cluster Configuration](./galera-cluster.html)
-- [Template Server & Security](./template-server.html)
+- [Template Server & Security](./template-server.md)
+- [Galera Cluster Configuration](./galera-cluster.md)
+- [Gluster FS Cluster Configuration](./glusterfs-cluster.md)
+- [Docker WordPress Deployment](./wordpress-docker.md)
+- [Load Balancer Setup](./apache-proxy.md)
 - [Monitoring & Maintenance](./monitoring.html)
 
 ---
