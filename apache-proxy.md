@@ -121,7 +121,53 @@ Start and enable Keepalived:
 ```bash
 systemctl enable --now keepalived
 ```
-
 ---
 
 > ✅ This configuration sets up an Apache-based reverse proxy load balancer with Keepalived providing failover using a virtual IP address (`192.168.27.220`).
+
+---
+
+## 🔒 Install and Configure ModSecurity with CRS
+
+### 1. Install ModSecurity
+
+```bash
+dnf install mod_security wget -y
+```
+
+### 2. Download and Configure OWASP Core Rule Set (CRS)
+
+```bash
+cd /etc/httpd/conf/
+wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.14.0.tar.gz
+dnf install tar -y
+tar xzvf v4.14.0.tar.gz
+ln -s coreruleset-4.14.0/ /etc/httpd/conf/crs
+rm -f v4.14.0.tar.gz
+cp crs/crs-setup.conf.example crs/crs-setup.conf
+```
+
+### 3. Include CRS in ModSecurity Configuration
+
+Edit or create:
+
+```bash
+vi /etc/httpd/conf.d/mod_security.conf
+```
+
+Add:
+
+```apache
+Include /etc/httpd/conf/crs/crs-setup.conf
+```
+
+### 4. Restart Apache
+
+```bash
+systemctl restart httpd
+systemctl status httpd
+```
+
+---
+
+> ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
