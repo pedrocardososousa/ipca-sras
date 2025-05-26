@@ -67,12 +67,12 @@ mount -a
 As the data is stored in a sub-volume called brick, we can create a directory in this new data space dedicated to it:
 For node01
 ```bash
-mkdir /data/glusterfs/volume1/brick0
+mkdir /data/glusterfs/volume1/brick1
 ```
 
 For node02
 ```bash
-mkdir /data/glusterfs/volume1/brick1
+mkdir /data/glusterfs/volume1/brick2
 ```
 
 ### 1. Install GlusterFS
