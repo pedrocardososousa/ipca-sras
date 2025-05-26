@@ -58,6 +58,7 @@ Add:
 ```
 192.168.27.241 nfs01 nfs01.cluster.local
 192.168.27.242 nfs02 nfs02.cluster.local
+192.168.27.243 nfs03 nfs03.cluster.local
 ```
 
 ### 🔗 Mount GlusterFS Volume
