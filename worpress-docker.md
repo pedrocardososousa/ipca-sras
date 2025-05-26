@@ -87,6 +87,9 @@ FLUSH PRIVILEGES;
 ---
 
 ## 📁 Docker Compose File
+```bash
+docker volume create --driver local --opt type=none --opt o=bind --opt device=/mnt/wordpress-data wp-content
+```
 
 Create `compose.yaml`:
 
@@ -107,11 +110,11 @@ services:
 
 volumes:
   wp-content:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/wordpress-data
-      o: bind
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: /mnt/wordpress-data
+#      o: bind
 ```
 
 ---
