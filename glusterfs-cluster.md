@@ -75,13 +75,18 @@ For node02
 mkdir /data/glusterfs/volume1/brick2
 ```
 
+For node03
+```bash
+mkdir /data/glusterfs/volume1/brick3
+```
+
 ### 1. Install GlusterFS
 
 ```bash
-dnf install centos-release-gluster9
+dnf install centos-release-gluster9 -y
 ```
 ```bash
-dnf install glusterfs glusterfs-libs glusterfs-server
+dnf install glusterfs glusterfs-libs glusterfs-server -y
 ```
 
 ```bash
@@ -93,6 +98,7 @@ vi /etc/hosts
 ```ini
 192.168.27.241 nfs01 nfs01.cluster.local
 192.168.27.242 nfs02 nfs02.cluster.local
+192.168.27.243 nfs03 nfs03.cluster.local
 ```
 
 ```bash
@@ -107,6 +113,7 @@ systemctl start glusterfsd.service glusterd.service
 On one node:
 ```bash
 gluster peer probe nfs02.cluster.local
+gluster peer probe nfs03.cluster.local
 gluster peer status
 ```
 
@@ -115,7 +122,7 @@ gluster peer status
 ### 3. Create the Volume
 
 ```bash
-gluster volume create volume1 replica 2 nfs01.cluster.local:/data/glusterfs/volume1/brick1/ nfs02.cluster.local:/data/glusterfs/volume1/brick2/ force
+gluster volume create volume1 replica 3 nfs01.cluster.local:/data/glusterfs/volume1/brick1/ nfs02.cluster.local:/data/glusterfs/volume1/brick2/ nfs03.cluster.local:/data/glusterfs/volume1/brick3/ force
 ```
 Replica 2 volumes are prone to split-brain. Use Arbiter or Replica 3 to avoid this. See: https://docs.gluster.org/en/latest/Administrator-Guide/Split-brain-and-ways-to-deal-with-it/.
 Do you still want to continue?
