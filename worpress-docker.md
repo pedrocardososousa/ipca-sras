@@ -125,4 +125,5 @@ ls /mnt/wordpress-data
 
 ---
 
+
 > ✅ This setup ensures WordPress uses shared storage from a GlusterFS cluster for persistent file storage across multiple containers or nodes.

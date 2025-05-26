@@ -174,6 +174,16 @@ volumes:
 
 ---
 
+## 🚀 Extra commands
+
+```bash
+gluster volume set volume1 cluster.quorum-reads false
+gluster volume set volume1 cluster.quorum-count 1
+gluster volume heal volume1 enable
+gluster volume status
+```
+---
+
 ## ✅ Notes
 
 - Consider using a VIP with Keepalived for better mount availability
