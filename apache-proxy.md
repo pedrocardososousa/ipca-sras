@@ -114,6 +114,7 @@ vrrp_instance VI_DB {
     }
 }
 ```
+Change `state` and `priority` for other nodes (`BACKUP`, `90`, `80`, etc.).
 
 Start and enable Keepalived:
 
