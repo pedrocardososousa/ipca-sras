@@ -106,15 +106,7 @@ services:
       WORDPRESS_DB_PASSWORD: wordPress!ipca
       WORDPRESS_DB_NAME: IPCA
     volumes:
-      - wp-content:/var/www/html
-
-volumes:
-  wp-content:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /mnt/wordpress-data
-#      o: bind
+      - "/mnt/wordpress-data:/var/www/html"
 ```
 
 ---
