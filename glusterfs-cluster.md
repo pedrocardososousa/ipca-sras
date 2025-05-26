@@ -14,8 +14,9 @@ This guide outlines the configuration of a two-node GlusterFS cluster to provide
 
 - **GlusterFS Node 1**: `192.168.27.241`
 - **GlusterFS Node 2**: `192.168.27.242`
+- **GlusterFS Node 3**: `192.168.27.243`
 - **Volume Name**: `volume1`
-- **Replica Count**: 2
+- **Replica Count**: 3
 - **Mount Point on Clients**: `/mnt/wordpress-data`
 
 ---
@@ -23,19 +24,19 @@ This guide outlines the configuration of a two-node GlusterFS cluster to provide
 ## 📌 Architecture Diagram
 
 ```
-               +---------------------+
-               |   WordPress Server  |
-               |   192.168.27.211    |
-               +---------------------+
-                     |      
-        Mount /mnt/wordpress-data via GlusterFS
-                     |
-    +-------------------+-------------------+
-    |   Gluster Node 1  |   Gluster Node 2  |
-    |   192.168.27.241  |   192.168.27.242  |
-    +-------------------+-------------------+
-            |               |        
-            +------ Replicated Volume ------+
+                      +---------------------+
+                       |   WordPress Server  |
+                       |   192.168.27.211    |
+                       +---------------------+
+                                  |      
+                 Mount /mnt/wordpress-data via GlusterFS
+                                  |
+    +-------------------+-------------------+-------------------+
+    |   Gluster Node 1  |   Gluster Node 2  |   Gluster Node 3  |
+    |   192.168.27.241  |   192.168.27.242  |   192.168.27.243  |
+    +-------------------+-------------------+-------------------+
+              |                   |                   |        
+            +------------ Replicated Volume ------------+
 ```
 
 ---
