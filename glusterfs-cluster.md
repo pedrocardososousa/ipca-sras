@@ -115,7 +115,7 @@ gluster peer status
 ### 3. Create the Volume
 
 ```bash
-gluster volume create volume1 replica 2 nfs01.cluster.local:/data/glusterfs/volume1/brick0/ nfs02.cluster.local:/data/glusterfs/volume1/brick0/ force
+gluster volume create volume1 replica 2 nfs01.cluster.local:/data/glusterfs/volume1/brick1/ nfs02.cluster.local:/data/glusterfs/volume1/brick2/ force
 ```
 Replica 2 volumes are prone to split-brain. Use Arbiter or Replica 3 to avoid this. See: https://docs.gluster.org/en/latest/Administrator-Guide/Split-brain-and-ways-to-deal-with-it/.
 Do you still want to continue?
