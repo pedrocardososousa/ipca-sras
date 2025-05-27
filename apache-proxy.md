@@ -40,6 +40,7 @@ firewall-cmd --reload
 ```bash
 systemctl start httpd
 systemctl status httpd
+systemctl enable --now httpd
 ```
 
 ---
