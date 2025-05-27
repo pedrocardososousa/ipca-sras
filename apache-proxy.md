@@ -169,6 +169,21 @@ systemctl restart httpd
 systemctl status httpd
 ```
 
+### 5. Check SELinux status
+
+```bash
+vi /etc/selinux/config
+```
+
+```ini
+SELINUX=enforcing
+```
+
+```bash
+dnf install policycoreutils-python-utils
+semanage port -a -p tcp -t http_port_t 80
+/usr/sbin/setsebool -P httpd_can_network_connect 1
+```
 ---
 
 > ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
