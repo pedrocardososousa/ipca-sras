@@ -74,6 +74,31 @@ ProxyPass "/" "balancer://myset/"
 ProxyPassReverse "/" "balancer://myset/"
 ```
 
+```apache
+<VirtualHost *:80>
+    ServerName demo.ipca.site
+
+    # Enable ModSecurity
+    <IfModule security2_module>
+        SecRuleEngine On
+    </IfModule>
+
+    # Define the reverse proxy
+    <Proxy "balancer://myset">
+        BalancerMember http://192.168.27.211:80
+        BalancerMember http://192.168.27.212:80
+        ProxySet lbmethod=bytraffic
+    </Proxy>
+
+    ProxyPreserveHost On
+    ProxyPass "/" "balancer://myset/"
+    ProxyPassReverse "/" "balancer://myset/"
+
+    ErrorLog /var/log/httpd/proxy_error.log
+    CustomLog /var/log/httpd/proxy_access.log combined
+</VirtualHost>
+```
+
 Restart Apache:
 
 ```bash
