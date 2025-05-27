@@ -47,7 +47,7 @@ dnf update -y
 dnf install openscap-scanner scap-security-guide -y
 
 # Security scanning profiles
-oscap xccdf eval --report report.html --profile xccdf_org.ssgproject.content_profile_anssi_bp28_high /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+#oscap xccdf eval --report report.html --profile xccdf_org.ssgproject.content_profile_anssi_bp28_high /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
 oscap xccdf eval --report report.html --profile xccdf_org.ssgproject.content_profile_anssi_bp28_intermediary /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
 
 # Export security report
