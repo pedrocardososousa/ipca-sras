@@ -40,37 +40,48 @@ This template is built to serve as a secure baseline for deployment across your 
 
 ## 🔐 Security Configuration & Hardening Commands
 
-```bash
+
 # Base system prep
+```bash
 su
 dnf update -y
 dnf install openscap-scanner scap-security-guide -y
-
+```
 # Security scanning profiles
-#oscap xccdf eval --report report.html --profile xccdf_org.ssgproject.content_profile_anssi_bp28_high /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+```bash
 oscap xccdf eval --report report.html --profile xccdf_org.ssgproject.content_profile_anssi_bp28_intermediary /usr/share/xml/scap/ssg/content/ssg-rl9-ds.xml
+```
 
 # Export security report
+```bash
+#update IP Address and local folder for your environment
 scp -r manager@192.168.27.136:/home/manager/report.html /Users/psousa/Downloads
+```
 
 # Set GRUB password
+```bash
 grub2-setpassword
 # Password used: 1PCA
+```
 
 # Check services
+```bash
 ps faxuw
 systemctl list-units
+```
 
-# Remote access services
+# Remote access services check
+```bash
 dnf install net-tools -y
 netstat -anp
+```
 
 # Bash prompt and history hardening
+```bash
 cp .bashrc .bashrc.backup
 vi .bashrc
 ```
 
-# Replace:
 ```ini
 # .bashrc
 
@@ -122,59 +133,87 @@ fi
 # Clean up temporary variable
 unset rc
 ```
-```bash
+
+
 # Disable Ctrl-Alt-Del reboot
+```bash
 systemctl disable ctrl-alt-del.target
 systemctl mask ctrl-alt-del.target
 systemctl daemon-reload
+```
 
 # Console lock
+```bash
 dnf install vlock -y
 vlock
+```
 
 # SSH hardening
+```bash
 vi /etc/ssh/sshd_config
+```
 # Add or update:
+```ini
 PermitRootLogin no
 LogLevel VERBOSE
+```
 
 # Check SUID/SGID files
+```bash
 find / -path /proc -prune -o -type f \( -perm -4000 -o -perm -2000 \) -exec ls -l {} \;
+```
 
 # Check orphan files
+```bash
 find / -path /proc -prune -nouser -o -nogroup -exec ls -l {} \;
+```
 
 # Verify installed packages
+```bash
 rpm -qaV
+```
 
 # Log bash activity to syslog
+```bash
 vi /etc/profile.d/bash.sh
+```
 # Add:
-export PROMPT_COMMAND='RETRN_VAL=$?;logger -p local6.debug "$(whoami) [$$]: $(history 1 | sed "s/^[ ]*[0-9]\+[]*//" ) [$RETRN_VAL]"'
+```ini
+export PROMPT_COMMAND='RETRN_VAL=$?; HIST_CMD=$(history 1 | sed "s/^[ ]*[0-9]\+[ ]*//"); logger -p local6.debug "$(whoami) [$$]: $HIST_CMD [$RETRN_VAL]"'
+```
 
 # Local monitoring
+```bash
 dnf install sysstat -y
 sar -A
 sar -q
 sar -r
 systemctl enable --now sysstat
+```
 
 # Local process accounting
+```bash
 dnf install psacct -y
 systemctl start psacct.service
 systemctl enable psacct.service
+```
 
 # Uptime and command activity tracking
+```bash
 ac         # Global check
 ac -d      # By day
 ac -p      # By user
+```
 
 # View user command execution
+```bash
 sa -u
 lastcomm
 lastcomm ipca
+```
 
 # File integrity with Tripwire
+```bash
 dnf install epel-release -y
 dnf install tripwire -y
 /usr/sbin/tripwire-setup-keyfiles
@@ -184,7 +223,8 @@ dnf install tripwire -y
 # Pass 2: www.est.ipca.pt
 # Pass 3: www.ipca.pt
 # Pass 4: www.ipca.pt
-
+```
+```bash
 twadmin -m P -S /etc/tripwire/site.key /etc/tripwire/twpol.txt
 tripwire --init
 tripwire --check
