@@ -89,6 +89,12 @@ semanage port -a -t mysqld_port_t -p udp 4567
 semanage permissive -a mysqld_t
 ```
 
+```bash
+/usr/sbin/setsebool mysql_connect_any 1
+/usr/sbin/setsebool mysql_connect_http 1
+/usr/sbin/setsebool selinuxuser_mysql_connect_enabled 1
+```
+
 
 ### 1. Install MariaDB and Galera
 
