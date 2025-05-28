@@ -66,13 +66,63 @@ dnf install net-tools -y
 netstat -anp
 
 # Bash prompt and history hardening
+cp .bashrc .bashrc.backup
 vi .bashrc
-# Add:
-PS1="[\u@\h \w]\\$"
-export HISTTIMEFORMAT="%F %T "
-export PROMPT_COMMAND="history -a"
-export TMOUT=120
+```
 
+# Replace:
+```ini
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Enhanced and colorized shell prompt (if terminal supports it)
+if [ -x /usr/bin/tput ] && tput setaf 1 &>/dev/null; then
+    PS1='\[\e[01;32m\][\u@\h \w]\$\[\e[00m\] '
+else
+    PS1="[\u@\h \w]\$"
+fi
+
+# Timestamp in command history
+export HISTTIMEFORMAT="%F %T "
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+export SYSTEMD_PAGER=
+
+# Useful aliases
+alias ll='ls -lah --color=auto'
+alias la='ls -A'
+alias l='ls -CF'
+alias grep='grep --color=auto'
+alias gs='git status'
+
+# Enable programmable completion features (if not already enabled globally)
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+# Source additional bash config scripts from ~/.bashrc.d/
+if [ -d ~/.bashrc.d ]; then
+    for rc in ~/.bashrc.d/*; do
+        if [ -f "$rc" ]; then
+            . "$rc"
+        fi
+    done
+fi
+
+# Clean up temporary variable
+unset rc
+```
+```bash
 # Disable Ctrl-Alt-Del reboot
 systemctl disable ctrl-alt-del.target
 systemctl mask ctrl-alt-del.target
