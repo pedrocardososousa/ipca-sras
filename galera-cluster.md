@@ -250,5 +250,20 @@ No need to worry about which node is online — Keepalived handles the routing.
 
 ---
 
+## 🧭 Safe Bootstrap
+
+```bash
+cd /var/lib/mysql/
+vi grastate.dat
+```
+
+```ini
+ GALERA saved state
+version: 2.1
+uuid:    9e847de8-3ba8-11f0-811f-8709d50fadfd
+seqno:   -1
+safe_to_bootstrap: 1
+```
+
 
 > 💡 *MariaDB Galera Cluster ensures zero-downtime database replication with automatic failover — a perfect fit for high-availability WordPress hosting.*
