@@ -94,7 +94,10 @@ semanage permissive -a mysqld_t
 /usr/sbin/setsebool mysql_connect_http 1
 /usr/sbin/setsebool selinuxuser_mysql_connect_enabled 1
 ```
-
+# Check SELinux status
+```bash
+sestatus
+```
 
 ### 1. Install MariaDB and Galera
 
