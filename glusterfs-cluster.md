@@ -103,6 +103,15 @@ vi /etc/hosts
 192.168.27.242 nfs02 nfs02.cluster.local
 192.168.27.243 nfs03 nfs03.cluster.local
 ```
+# Check SELinux
+```bash
+getsebool -a | grep -i gluster
+/usr/sbin/setsebool gluster_anon_write 1
+/usr/sbin/setsebool gluster_export_all_ro 1
+/usr/sbin/setsebool gluster_export_all_rw 1
+/usr/sbin/setsebool gluster_use_execmem 1
+sestatus
+```
 
 ```bash
 systemctl enable glusterfsd.service glusterd.service
