@@ -351,6 +351,8 @@ print "$output\n";
 - Make the script executable:
 ```bash
 chmod +x /etc/httpd/modsecurity.d/modsec_clamav.pl
+chown apache:apache /etc/httpd/modsecurity.d/modsec_clamav.pl
+chcon -t httpd_exec_t /etc/httpd/modsecurity.d/modsec_clamav.pl
 ```
 - Create a ModSecurity rule to invoke the ClamAV script:
 ```bash
@@ -359,7 +361,7 @@ vi /etc/httpd/conf.d/mod_security.conf
 
 - Add the following rule:
 ```ini
-SecRule FILES_TMPNAMES "@inspectFile /etc/apache2/modsecurity.d/modsec_clamav.pl" \
+SecRule FILES_TMPNAMES "@inspectFile /etc/httpd/modsecurity.d/modsec_clamav.pl" \
   "id:'999990', \
   phase:2, \
   t:none, \
