@@ -189,7 +189,7 @@ Edit or create:
 vi /etc/httpd/conf.d/mod_security.conf
 ```
 
-Add:
+Add this to end of the file:
 ```apache
 Include    /etc/httpd/conf/crs/crs-setup.conf
 
