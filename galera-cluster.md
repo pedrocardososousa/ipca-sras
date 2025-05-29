@@ -306,6 +306,11 @@ mariadb
 SELECT * FROM galera_test.users;
 ```
 
+Opcional
+```sql
+DROP DATABASE galera_test;
+```
+
 ✅ Expected: Data is visible immediately on all nodes.
 
 
