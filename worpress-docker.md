@@ -80,8 +80,21 @@ Edit `/etc/fstab`:
 ## 🗄️ Create WordPress Database (On DB Server)
 
 ```sql
+-- Create the database
 CREATE DATABASE IPCA;
-GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'%' IDENTIFIED BY 'wordPress!ipca';
+
+-- Remove the insecure wildcard user (if exists)
+DROP USER IF EXISTS 'ipca'@'%';
+
+-- Create user for IP 192.168.27.211
+CREATE USER 'ipca'@'192.168.27.211' IDENTIFIED BY 'wordPress!ipca';
+GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'192.168.27.211';
+
+-- Create user for IP 192.168.27.212
+CREATE USER 'ipca'@'192.168.27.212' IDENTIFIED BY 'wordPress!ipca';
+GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'192.168.27.212';
+
+-- Apply changes
 FLUSH PRIVILEGES;
 ```
 
