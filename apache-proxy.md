@@ -345,6 +345,10 @@ elsif ($error_message =~ m/: OK$/) {
     $output = "1 clamscan: OK";
 }
 
+open(my $log, '>>', '/var/log/clamav_scan.log') or die "Cannot open log: $!";
+print $log "[" . localtime() . "] File: $FILE => $output\n";
+close($log);
+
 print "$output\n";
 ```
 
