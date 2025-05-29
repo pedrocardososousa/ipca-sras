@@ -322,6 +322,23 @@ cat /var/log/httpd/modsec_audit.log
 
 Output:
 ```
+[29/May/2025:09:46:03.938110 +0100] aDgeytMzrRSZmCAplzSpzgAAAJg 192.168.27.1 54802 192.168.27.220 80
+--e1cd7d3c-B--
+GET / HTTP/1.1
+Host: 192.168.27.220
+Accept: */*
+User-Agent: <script>alert('xss')</script>
+
+--e1cd7d3c-F--
+HTTP/1.1 200 OK
+X-Powered-By: PHP/8.2.28
+Link: <http://demo.ipca.site/wp-json/>; rel="https://api.w.org/"
+Vary: Accept-Encoding
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+
+--e1cd7d3c-E--
+
 --e1cd7d3c-H--
 Message: Warning. Pattern match "(?:^([\\d.]+|\\[[\\da-f:]+\\]|[\\da-f:]+)(:[\\d]+)?$)" at REQUEST_HEADERS:Host. [file "/etc/httpd/conf/crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "730"] [id "920350"] [msg "Host header is a numeric IP address"] [data "192.168.27.220"] [severity "WARNING"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/PROTOCOL-ENFORCEMENT"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
 Message: Warning. detected XSS using libinjection. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "102"] [id "941100"] [msg "XSS Attack Detected via libinjection"] [data "Matched Data: XSS data found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"]
