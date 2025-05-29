@@ -64,7 +64,7 @@ grep "mod_proxy" /etc/httpd/conf.modules.d/00-proxy.conf
 Create file:
 
 ```bash
-vi /etc/httpd/conf.d/revers_proxy.conf
+vi /etc/httpd/conf.d/reverse_proxy.conf
 ```
 
 Insert:
