@@ -13,6 +13,11 @@ This guide walks you through configuring Apache as a reverse proxy with load bal
 ## 🧰 Prerequisites
 
 - Rocky Linux server
+- Two Frontend apache servers:
+  - `192.168.27.221`
+  - `192.168.27.222`
+- Virtual IP
+  - `192.168.27.220`
 - Two backend WordPress nodes:
   - `192.168.27.211`
   - `192.168.27.212`
