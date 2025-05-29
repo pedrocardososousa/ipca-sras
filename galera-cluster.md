@@ -343,4 +343,16 @@ mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
  - Node rejoins cluster automatically.
  - wsrep_cluster_size increases.
 
+### 4. MariaDB running user
+
+Check running user
+```bash
+ps -eo user,comm | grep mariadb
+```
+
+Output example:
+```
+mysql    mariadbd
+```
+
 > 💡 *MariaDB Galera Cluster ensures zero-downtime database replication with automatic failover — a perfect fit for high-availability WordPress hosting.*
