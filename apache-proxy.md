@@ -174,7 +174,7 @@ cp crs/crs-setup.conf.example crs/crs-setup.conf
 ```
 
 ### 3. Include CRS in ModSecurity Configuration
-
+Source: https://docs.rockylinux.org/guides/web/apache_hardened_webserver/modsecurity/
 Edit or create:
 
 ```bash
@@ -182,9 +182,28 @@ vi /etc/httpd/conf.d/mod_security.conf
 ```
 
 Add:
-
 ```apache
-Include /etc/httpd/conf/crs/crs-setup.conf
+Include    /etc/httpd/conf/crs/crs-setup.conf
+
+SecAction "id:900110,phase:1,pass,nolog,\
+    setvar:tx.inbound_anomaly_score_threshold=10000,\
+    setvar:tx.outbound_anomaly_score_threshold=10000"
+
+SecAction "id:900000,phase:1,pass,nolog,\
+      setvar:tx.paranoia_level=1"
+
+
+# === ModSec Core Rule Set: Runtime Exclusion Rules (ids: 10000-49999)
+
+# ...
+
+
+# === ModSecurity Core Rule Set Inclusion
+
+Include    /etc/httpd/conf/crs/rules/*.conf
+
+
+# === ModSec Core Rule Set: Startup Time Rules Exclusions
 ```
 
 ### 4. Restart Apache
