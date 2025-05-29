@@ -265,4 +265,27 @@ Output example:
 User apache
 Group apache
 ```
+
+```bash
+
+```
+
+Output example (check main PID)
+```
+● httpd.service - The Apache HTTP Server
+     Loaded: loaded (/usr/lib/systemd/system/httpd.service; enabled; preset: disabled)
+     Active: active (running) since Thu 2025-05-29 09:28:37 WEST; 8min ago
+       Docs: man:httpd.service(8)
+   Main PID: 949 (httpd)
+     Status: "Total requests: 0; Idle/Busy workers 100/0;Requests/sec: 0; Bytes served/sec:   0 B/sec"
+      Tasks: 177 (limit: 10242)
+     Memory: 79.7M
+        CPU: 1.208s
+     CGroup: /system.slice/httpd.service
+             ├─ 949 /usr/sbin/httpd -DFOREGROUND
+             ├─ 971 /usr/sbin/httpd -DFOREGROUND
+             ├─ 972 /usr/sbin/httpd -DFOREGROUND
+             ├─ 999 /usr/sbin/httpd -DFOREGROUND
+             └─1000 /usr/sbin/httpd -DFOREGROUND
+```
 > ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
