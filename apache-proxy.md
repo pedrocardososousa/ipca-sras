@@ -236,4 +236,33 @@ SELINUX=enforcing
 ```
 ---
 
+
+### 5. Check Apache Settings
+
+## Apache running user
+
+Check running user
+```bash
+ps -eo user,comm | grep httpd
+```
+
+Output example:
+```
+root     httpd
+apache   httpd
+apache   httpd
+apache   httpd
+apache   httpd
+```
+
+Check apache configuration
+```bash
+grep -i "^User\|^Group" /etc/httpd/conf/httpd.conf
+```
+
+Output example:
+```
+User apache
+Group apache
+```
 > ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
