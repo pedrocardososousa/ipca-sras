@@ -232,8 +232,6 @@ SELINUX=enforcing
 ```
 
 ```bash
-dnf install policycoreutils-python-utils
-semanage port -a -p tcp -t http_port_t 80
 /usr/sbin/setsebool -P httpd_can_network_connect 1
 ```
 ---
