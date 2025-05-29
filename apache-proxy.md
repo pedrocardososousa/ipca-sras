@@ -300,4 +300,49 @@ Output example (check main PID)
 │   ├── crs-setup.conf
 │   └── rules/
 ```
+
+## 🧪 Test Scenarios
+
+### ✅ Scenario 1: Apache HA (Keepalived)
+1. Shutdown one Apache server.
+2. Ensure the virtual IP (192.168.27.220) is still available.
+3. Confirm Proxy still routes traffic.
+
+### ✅ Scenario 2: ModSecurity XSS Block
+Run this comamand in the client
+```bash
+curl -H "User-Agent: <script>alert('xss')</script>" http://192.168.27.220/
+```
+Expected result: HTTP 403 blocked by ModSecurity.
+
+
+```bash
+cat /var/log/httpd/modsec_audit.log
+```
+
+Output:
+```
+--e1cd7d3c-H--
+Message: Warning. Pattern match "(?:^([\\d.]+|\\[[\\da-f:]+\\]|[\\da-f:]+)(:[\\d]+)?$)" at REQUEST_HEADERS:Host. [file "/etc/httpd/conf/crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "730"] [id "920350"] [msg "Host header is a numeric IP address"] [data "192.168.27.220"] [severity "WARNING"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/PROTOCOL-ENFORCEMENT"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"]
+Message: Warning. detected XSS using libinjection. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "102"] [id "941100"] [msg "XSS Attack Detected via libinjection"] [data "Matched Data: XSS data found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"]
+Message: Warning. Pattern match "(?i)<script[^>]*>[\\s\\S]*?" at REQUEST_HEADERS:User-Agent. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "130"] [id "941110"] [msg "XSS Filter - Category 1: Script Tag Vector"] [data "Matched Data: <script> found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"]
+Message: Warning. Pattern match "(?i)<[^0-9<>A-Z_a-z]*(?:[^\\s\\x0b\"'<>]*:)?[^0-9<>A-Z_a-z]*[^0-9A-Z_a-z]*?(?:s[^0-9A-Z_a-z]*?(?:c[^0-9A-Z_a-z]*?r[^0-9A-Z_a-z]*?i[^0-9A-Z_a-z]*?p[^0-9A-Z_a-z]*?t|t[^0-9A-Z_a-z]*?y[^0-9A-Z_a-z]*?l[^0-9A-Z_a-z]*?e|v[^0-9A-Z_a-z]*?g|e[^0-9A-Z_a-z]*?t[^0- ..." at REQUEST_HEADERS:User-Agent. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "225"] [id "941160"] [msg "NoScript XSS InjectionChecker: HTML Injection"] [data "Matched Data: <script found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"]
+Message: Warning. Unconditional match in SecAction. [file "/etc/httpd/conf/crs/rules/RESPONSE-980-CORRELATION.conf"] [line "98"] [id "980170"] [msg "Anomaly Scores: (Inbound Scores: blocking=18, detection=18, per_pl=18-0-0-0, threshold=10000) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=10000) - (SQLI=0, XSS=15, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBINED_SCORE=18)"] [ver "OWASP_CRS/4.14.0"] [tag "reporting"] [tag "OWASP_CRS"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 192.168.27.1] ModSecurity: Warning. Pattern match "(?:^([\\\\\\\\d.]+|\\\\\\\\[[\\\\\\\\da-f:]+\\\\\\\\]|[\\\\\\\\da-f:]+)(:[\\\\\\\\d]+)?$)" at REQUEST_HEADERS:Host. [file "/etc/httpd/conf/crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf"] [line "730"] [id "920350"] [msg "Host header is a numeric IP address"] [data "192.168.27.220"] [severity "WARNING"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-protocol"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/PROTOCOL-ENFORCEMENT"] [tag "capec/1000/210/272"] [tag "PCI/6.5.10"] [hostname "192.168.27.220"] [uri "/"] [unique_id "aDgeytMzrRSZmCAplzSpzgAAAJg"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 192.168.27.1] ModSecurity: Warning. detected XSS using libinjection. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "102"] [id "941100"] [msg "XSS Attack Detected via libinjection"] [data "Matched Data: XSS data found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"] [hostname "192.168.27.220"] [uri "/"] [unique_id "aDgeytMzrRSZmCAplzSpzgAAAJg"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 192.168.27.1] ModSecurity: Warning. Pattern match "(?i)<script[^>]*>[\\\\\\\\s\\\\\\\\S]*?" at REQUEST_HEADERS:User-Agent. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "130"] [id "941110"] [msg "XSS Filter - Category 1: Script Tag Vector"] [data "Matched Data: <script> found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"] [hostname "192.168.27.220"] [uri "/"] [unique_id "aDgeytMzrRSZmCAplzSpzgAAAJg"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 192.168.27.1] ModSecurity: Warning. Pattern match "(?i)<[^0-9<>A-Z_a-z]*(?:[^\\\\\\\\s\\\\\\\\x0b\\\\"'<>]*:)?[^0-9<>A-Z_a-z]*[^0-9A-Z_a-z]*?(?:s[^0-9A-Z_a-z]*?(?:c[^0-9A-Z_a-z]*?r[^0-9A-Z_a-z]*?i[^0-9A-Z_a-z]*?p[^0-9A-Z_a-z]*?t|t[^0-9A-Z_a-z]*?y[^0-9A-Z_a-z]*?l[^0-9A-Z_a-z]*?e|v[^0-9A-Z_a-z]*?g|e[^0-9A-Z_a-z]*?t[^0- ..." at REQUEST_HEADERS:User-Agent. [file "/etc/httpd/conf/crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf"] [line "225"] [id "941160"] [msg "NoScript XSS InjectionChecker: HTML Injection"] [data "Matched Data: <script found within REQUEST_HEADERS:User-Agent: <script>alert('xss')</script>"] [severity "CRITICAL"] [ver "OWASP_CRS/4.14.0"] [tag "application-multi"] [tag "language-multi"] [tag "platform-multi"] [tag "attack-xss"] [tag "xss-perf-disable"] [tag "paranoia-level/1"] [tag "OWASP_CRS"] [tag "OWASP_CRS/ATTACK-XSS"] [tag "capec/1000/152/242"] [hostname "192.168.27.220"] [uri "/"] [unique_id "aDgeytMzrRSZmCAplzSpzgAAAJg"]
+Apache-Error: [file "apache2_util.c"] [line 271] [level 3] [client 192.168.27.1] ModSecurity: Warning. Unconditional match in SecAction. [file "/etc/httpd/conf/crs/rules/RESPONSE-980-CORRELATION.conf"] [line "98"] [id "980170"] [msg "Anomaly Scores: (Inbound Scores: blocking=18, detection=18, per_pl=18-0-0-0, threshold=10000) - (Outbound Scores: blocking=0, detection=0, per_pl=0-0-0-0, threshold=10000) - (SQLI=0, XSS=15, RFI=0, LFI=0, RCE=0, PHPI=0, HTTP=0, SESS=0, COMBINED_SCORE=18)"] [ver "OWASP_CRS/4.14.0"] [tag "reporting"] [tag "OWASP_CRS"] [hostname "192.168.27.220"] [uri "/"] [unique_id "aDgeytMzrRSZmCAplzSpzgAAAJg"]
+Apache-Handler: proxy-server
+Stopwatch: 1748508362657061 1281109 (- - -)
+Stopwatch2: 1748508362657061 1281109; combined=39426, p1=34640, p2=3369, p3=182, p4=1053, p5=182, sr=0, sw=0, l=0, gc=0
+Response-Body-Transformed: Dechunked
+Producer: ModSecurity for Apache/2.9.6 (http://www.modsecurity.org/); OWASP_CRS/4.14.0.
+Server: Apache/2.4.62 (Rocky Linux)
+Engine-Mode: "ENABLED"
+
+--e1cd7d3c-Z--
+```
+
+
 > ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
