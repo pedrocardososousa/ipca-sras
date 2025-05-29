@@ -325,7 +325,7 @@ if (@ARGV != 1) {
 
 my ($FILE) = @ARGV;
 
-$cmd = "$CLAMSCAN --stdout --disable-summary $FILE";
+$cmd = "$CLAMSCAN --stdout --no-summary $FILE";
 $input = `$cmd`;
 $input =~ m/^(.+)/;
 $error_message = $1;
