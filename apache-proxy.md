@@ -282,6 +282,30 @@ mkdir -p /run/clamd.scan
 chown clamscan:clamscan /run/clamd.scan
 ```
 
+## Integration with ModSecurity
+- Edit the configuration file:
+```bash
+vi /etc/httpd/conf.d/mod_security.conf
+```
+
+- Configure file upload settings:
+```ini
+SecUploadDir /var/cache/modsecurity
+SecUploadKeepFiles On
+SecUploadFileMode 0600
+```
+
+- Ensure the upload directory exists and has appropriate permissions:
+```bash
+mkdir -p /var/cache/modsecurity
+chown apache:apache /var/cache/modsecurity
+```
+
+- Restart Apache to apply changes:
+```bash
+systemctl restart httpd
+```
+
 ## Check Apache Settings
 
 ### Apache running user
