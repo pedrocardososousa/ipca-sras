@@ -148,7 +148,8 @@ gluster volume info
 ```
 
 ```bash
-gluster volume set volume1 auth.allow 192.168.27.*
+gluster volume set volume1 auth.allow 192.168.27.211,192.168.27.212
+gluster volume get volume1 auth.allow
 ```
 
 ---
