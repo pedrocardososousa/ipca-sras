@@ -44,6 +44,7 @@ systemctl enable --now httpd
 ```
 
 ---
+Source: https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html
 
 ## 🔌 Verify mod_proxy Is Enabled
 
