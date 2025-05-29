@@ -236,6 +236,51 @@ SELINUX=enforcing
 ```
 ---
 
+### 🛡️ Step 1: Install ClamAV on Rocky Linux
+
+- Install ClamAV and related packages:
+```bash
+dnf install epel-release -y
+dnf install clamav clamd clamav-update -y
+```
+
+- Create a dedicated service account for ClamAV:
+```bash
+groupadd clamav
+useradd -g clamav -s /bin/false -c "Clam Antivirus" clamav
+```
+
+- Update the ClamAV virus database:
+```bash
+freshclam
+```
+
+- Enable ClamAV scanning permissions in SELinux:
+```bash
+setsebool -P antivirus_can_scan_system 1
+```
+
+- Start and enable the ClamAV daemon:
+```bash
+systemctl enable --now clamd@scan
+```
+
+- Edit the ClamAV config:
+```bash
+vi /etc/clamd.d/scan.conf
+```
+
+- Use a Unix Socket (recommended for local use)
+Uncomment and configure the following:
+```ini
+LocalSocket /run/clamd.scan/clamd.sock
+```
+
+- Make sure the socket directory exists:
+```bash
+mkdir -p /run/clamd.scan
+chown clamscan:clamscan /run/clamd.scan
+```
 
 ## Check Apache Settings
 
