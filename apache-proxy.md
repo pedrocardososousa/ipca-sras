@@ -62,6 +62,7 @@ vi /etc/httpd/conf.d/revers_proxy.conf
 ```
 
 Insert:
+Simple approach
 
 ```apache
 <Proxy balancer://myset>
@@ -74,6 +75,7 @@ ProxyPass "/" "balancer://myset/"
 ProxyPassReverse "/" "balancer://myset/"
 ```
 
+Virtual Host Approach (selected)
 ```apache
 <VirtualHost *:80>
     ServerName demo.ipca.site
