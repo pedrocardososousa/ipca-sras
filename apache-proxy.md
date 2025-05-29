@@ -306,6 +306,75 @@ chown apache:apache /var/cache/modsecurity
 systemctl restart httpd
 ```
 
+## 🧪 Step 3: Integrate ClamAV with ModSecurity for File Upload Scanning
+- Create a ClamAV scanning script:
+```bash
+vi /etc/httpd/modsecurity.d/modsec_clamav.pl
+```
+
+- Paste the following content:
+```perl
+#!/usr/bin/perl
+
+$CLAMSCAN = "/usr/bin/clamscan";
+
+if (@ARGV != 1) {
+    print "Usage: modsec_clamav.pl <filename>\n";
+    exit;
+}
+
+my ($FILE) = @ARGV;
+
+$cmd = "$CLAMSCAN --stdout --disable-summary $FILE";
+$input = `$cmd`;
+$input =~ m/^(.+)/;
+$error_message = $1;
+
+$output = "0 Unable to parse clamscan output";
+
+if ($error_message =~ m/: Empty file\.$/) {
+    $output = "1 empty file";
+}
+elsif ($error_message =~ m/: (.+) ERROR$/) {
+    $output = "0 clamscan: $1";
+}
+elsif ($error_message =~ m/: (.+) FOUND$/) {
+    $output = "0 clamscan: $1";
+}
+elsif ($error_message =~ m/: OK$/) {
+    $output = "1 clamscan: OK";
+}
+
+print "$output\n";
+```
+
+- Make the script executable:
+```bash
+chmod +x /etc/httpd/modsecurity.d/modsec_clamav.pl
+```
+- Create a ModSecurity rule to invoke the ClamAV script:
+```bash
+vi /etc/httpd/conf.d/mod_security.conf
+```
+
+- Add the following rule:
+```ini
+SecRule FILES_TMPNAMES "@inspectFile /etc/apache2/modsecurity.d/modsec_clamav.pl" \
+  "id:'999990', \
+  phase:2, \
+  t:none, \
+  deny, \
+  log, \
+  msg:'Infected File upload detected', \
+  tag:'MALICIOUS_SOFTWARE/VIRUS'"
+```
+
+- Restart Apache to apply the new rule:
+```bash
+systemctl restart httpd
+```
+
+
 ## Check Apache Settings
 
 ### Apache running user
