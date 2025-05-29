@@ -237,9 +237,9 @@ SELINUX=enforcing
 ---
 
 
-### 5. Check Apache Settings
+## Check Apache Settings
 
-## Apache running user
+### Apache running user
 
 Check running user
 ```bash
@@ -266,8 +266,9 @@ User apache
 Group apache
 ```
 
+Check service status
 ```bash
-
+systemctl status httpd
 ```
 
 Output example (check main PID)
@@ -287,5 +288,16 @@ Output example (check main PID)
              ├─ 972 /usr/sbin/httpd -DFOREGROUND
              ├─ 999 /usr/sbin/httpd -DFOREGROUND
              └─1000 /usr/sbin/httpd -DFOREGROUND
+```
+
+### Check file structure
+
+```
+/etc/httpd/conf.d/
+├── mod_security.conf
+├── reverse_proxy.conf
+├── crs/
+│   ├── crs-setup.conf
+│   └── rules/
 ```
 > ✅ This setup uses Apache as a reverse proxy load balancer, managed with Keepalived for high availability and protected with ModSecurity using the OWASP Core Rule Set (CRS).
