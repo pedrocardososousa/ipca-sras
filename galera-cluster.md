@@ -185,10 +185,10 @@ systemctl start mariadb
 Verify with:
 
 ```bash
-mysql -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
-mysql -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
-mysql -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
-mysql -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
 ```
 
 You should see `3`.
@@ -273,6 +273,40 @@ uuid:    9e847de8-3ba8-11f0-811f-8709d50fadfd
 seqno:   -1
 safe_to_bootstrap: 1
 ```
+
+## 🔍 Test Categories
+### 1. ✅ Basic Cluster Health Tests
+
+```bash
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+```
+
+### 2. ✅ Read/Write Consistency Tests
+A. Write to one node, read from others
+On Node 1:
+```bash
+mariadb
+```
+
+```sql
+CREATE DATABASE galera_test;
+CREATE TABLE galera_test.users (id INT PRIMARY KEY, name VARCHAR(50));
+INSERT INTO galera_test.users VALUES (1, 'Alice');
+```
+
+On Node 2 or 2:
+```bash
+mariadb
+```
+
+```sql
+SELECT * FROM galera_test.users;
+```
+
+✅ Expected: Data is visible immediately on all nodes.
 
 
 > 💡 *MariaDB Galera Cluster ensures zero-downtime database replication with automatic failover — a perfect fit for high-availability WordPress hosting.*
