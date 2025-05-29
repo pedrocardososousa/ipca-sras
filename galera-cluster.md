@@ -313,5 +313,34 @@ DROP DATABASE galera_test;
 
 ✅ Expected: Data is visible immediately on all nodes.
 
+### 3. 🔄 Network Partition / Node Failure
+A. Hard Shutdown One Node
+```bash
+shutdown -h now  # or power off one node forcibly
+```
+
+```bash
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+```
+
+✅ Expected:
+ - Cluster size decreases.
+ - Remaining nodes still accept reads/writes.
+
+B. Restart the node
+
+```bash
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_incoming_addresses';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_status';"
+mariadb -e "SHOW STATUS LIKE 'wsrep_cluster_size';"
+```
+
+✅ Expected:
+ - Node rejoins cluster automatically.
+ - wsrep_cluster_size increases.
 
 > 💡 *MariaDB Galera Cluster ensures zero-downtime database replication with automatic failover — a perfect fit for high-availability WordPress hosting.*
