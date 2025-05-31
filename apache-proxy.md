@@ -315,6 +315,8 @@ vi /etc/httpd/modsecurity.d/modsec_clamav.pl
 - Paste the following content:
 ```perl
 #!/usr/bin/perl
+$ENV{'PATH'} = "/usr/bin:/bin";
+$ENV{'LANG'} = "C";
 
 $CLAMSCAN = "/usr/bin/clamscan";
 
@@ -325,24 +327,35 @@ if (@ARGV != 1) {
 
 my ($FILE) = @ARGV;
 
-$cmd = "$CLAMSCAN --stdout --no-summary $FILE";
+if (! -f $FILE) {
+    print "0 File does not exist: $FILE\n";
+    exit;
+}
+
+$cmd = "$CLAMSCAN --stdout --no-summary $FILE 2>&1";
 $input = `$cmd`;
+
+open(LOG, '>>/var/log/clamav_scan.log');
+print LOG "Running command: $cmd\n";
+print LOG "Output: $input\n";
+close(LOG);
+
 $input =~ m/^(.+)/;
 $error_message = $1;
 
-$output = "0 Unable to parse clamscan output";
-
-if ($error_message =~ m/: Empty file\.$/) {
+if ($input =~ m/: Empty file\.$/) {
     $output = "1 empty file";
 }
-elsif ($error_message =~ m/: (.+) ERROR$/) {
+elsif ($input =~ m/: (.+) ERROR$/) {
     $output = "0 clamscan: $1";
 }
-elsif ($error_message =~ m/: (.+) FOUND$/) {
+elsif ($input =~ m/: (.+) FOUND$/) {
     $output = "0 clamscan: $1";
 }
-elsif ($error_message =~ m/: OK$/) {
+elsif ($input =~ m/: OK$/) {
     $output = "1 clamscan: OK";
+} else {
+    $output = "0 Unknown clamscan output: $input";
 }
 
 open(my $log, '>>', '/var/log/clamav_scan.log') or die "Cannot open log: $!";
@@ -357,6 +370,13 @@ print "$output\n";
 chmod +x /etc/httpd/modsecurity.d/modsec_clamav.pl
 chown apache:apache /etc/httpd/modsecurity.d/modsec_clamav.pl
 chcon -t httpd_exec_t /etc/httpd/modsecurity.d/modsec_clamav.pl
+```
+
+- Make the logfile available
+```bash
+touch /var/log/clamav_scan.log
+chown apache:apache /var/log/clamav_scan.log
+chmod 644 /var/log/clamav_scan.log
 ```
 - Create a ModSecurity rule to invoke the ClamAV script:
 ```bash
