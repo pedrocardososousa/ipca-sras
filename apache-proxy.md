@@ -73,8 +73,8 @@ Simple approach
 
 ```apache
 <Proxy balancer://myset>
-    BalancerMember http://192.168.27.211:80
-    BalancerMember http://192.168.27.212:80
+    BalancerMember http://172.16.24.11:80
+    BalancerMember http://172.16.24.12:80
     ProxySet lbmethod=bytraffic
 </Proxy>
 
@@ -85,7 +85,7 @@ ProxyPassReverse "/" "balancer://myset/"
 Virtual Host Approach (selected)
 ```apache
 <VirtualHost *:80>
-    ServerName demo.ipca.site
+    ServerName demo.ica-canyoning.org
 
     # Enable ModSecurity
     <IfModule security2_module>
@@ -94,8 +94,8 @@ Virtual Host Approach (selected)
 
     # Define the reverse proxy
     <Proxy "balancer://myset">
-        BalancerMember http://192.168.27.211:80
-        BalancerMember http://192.168.27.212:80
+        BalancerMember http://172.16.24.11:80
+        BalancerMember http://172.16.24.11:80
         ProxySet lbmethod=bytraffic
     </Proxy>
 
@@ -134,7 +134,7 @@ Example configuration:
 ```ini
 vrrp_instance VI_DB {
     state MASTER
-    interface ens160
+    interface ens33
     virtual_router_id 60
     priority 100
     advert_int 1
@@ -145,7 +145,7 @@ vrrp_instance VI_DB {
     }
 
     virtual_ipaddress {
-        192.168.27.220
+        172.16.24.10
     }
 }
 ```
@@ -158,7 +158,7 @@ systemctl enable --now keepalived
 ```
 ---
 
-> ✅ This configuration sets up an Apache-based reverse proxy load balancer with Keepalived providing failover using a virtual IP address (`192.168.27.220`).
+> ✅ This configuration sets up an Apache-based reverse proxy load balancer with Keepalived providing failover using a virtual IP address (`172.16.24.10`).
 
 ---
 
