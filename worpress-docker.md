@@ -56,9 +56,9 @@ vi /etc/hosts
 Add:
 
 ```
-192.168.27.241 nfs01 nfs01.cluster.local
-192.168.27.242 nfs02 nfs02.cluster.local
-192.168.27.243 nfs03 nfs03.cluster.local
+172.16.24.31 nfs01 nfs01.cluster.local
+172.16.24.32 nfs02 nfs02.cluster.local
+172.16.24.33 nfs03 nfs03.cluster.local
 ```
 
 ### 🔗 Mount GlusterFS Volume
@@ -72,7 +72,7 @@ mount.glusterfs nfs01.cluster.local:/volume1 /mnt/wordpress-data
 Edit `/etc/fstab`:
 
 ```fstab
-192.168.27.241:/volume1 /mnt/wordpress-data glusterfs defaults,_netdev 0 0
+nfs01.cluster.local:/volume1 /mnt/wordpress-data glusterfs defaults,_netdev 0 0
 ```
 
 ---
@@ -86,13 +86,13 @@ CREATE DATABASE IPCA;
 -- Remove the insecure wildcard user (if exists)
 DROP USER IF EXISTS 'ipca'@'%';
 
--- Create user for IP 192.168.27.211
-CREATE USER 'ipca'@'192.168.27.211' IDENTIFIED BY 'wordPress!ipca';
-GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'192.168.27.211';
+-- Create user for IP 172.16.24.21
+CREATE USER 'ipca'@'172.16.24.21' IDENTIFIED BY 'wordPress!ipca';
+GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'172.16.24.21';
 
--- Create user for IP 192.168.27.212
-CREATE USER 'ipca'@'192.168.27.212' IDENTIFIED BY 'wordPress!ipca';
-GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'192.168.27.212';
+-- Create user for IP 172.16.24.22
+CREATE USER 'ipca'@'172.16.24.22' IDENTIFIED BY 'wordPress!ipca';
+GRANT ALL PRIVILEGES ON IPCA.* TO 'ipca'@'172.16.24.22';
 
 -- Apply changes
 FLUSH PRIVILEGES;
@@ -115,7 +115,7 @@ services:
     ports:
       - 80:80
     environment:
-      WORDPRESS_DB_HOST: 192.168.27.230
+      WORDPRESS_DB_HOST: 172.16.24.40
       WORDPRESS_DB_USER: ipca
       WORDPRESS_DB_PASSWORD: wordPress!ipca
       WORDPRESS_DB_NAME: IPCA
