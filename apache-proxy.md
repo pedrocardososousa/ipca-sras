@@ -14,13 +14,13 @@ This guide walks you through configuring Apache as a reverse proxy with load bal
 
 - Rocky Linux server
 - Two Frontend apache servers:
-  - `192.168.27.221`
-  - `192.168.27.222`
+  - `172.16.24.11`
+  - `172.16.24.12`
 - Virtual IP
-  - `192.168.27.220`
+  - `172.16.24.10`
 - Two backend WordPress nodes:
-  - `192.168.27.211`
-  - `192.168.27.212`
+  - `172.16.24.21`
+  - `172.16.24.22`
 
 ---
 
@@ -95,7 +95,7 @@ Virtual Host Approach (selected)
     # Define the reverse proxy
     <Proxy "balancer://myset">
         BalancerMember http://172.16.24.11:80
-        BalancerMember http://172.16.24.11:80
+        BalancerMember http://172.16.24.12:80
         ProxySet lbmethod=bytraffic
     </Proxy>
 
