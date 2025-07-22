@@ -1,121 +1,214 @@
-# OpenVPN Installation and Configuration Guide for RHEL-based Systems
+# OpenVPN + FreeIPA Server Setup with MFA (OTP)
 
-## Install OpenVPN
+## Prerequisites
 
-### Step 1: Enable EPEL Repository
+Install necessary packages:
+
 ```bash
-dnf install epel-release -y
+dnf install openvpn easy-rsa sssd sssd-ldap sssd-tools authselect -y
+dnf install ipa-client -y
 ```
 
-### Step 2: Install OpenVPN
+## Test FreeIPA Ports
+
 ```bash
-dnf install openvpn -y
+dnf install nc
+nc -zv ipa01.cluster.local 389
+nc -zv ipa01.cluster.local 88
+nc -zv ipa01.cluster.local 80
+nc -zv ipa01.cluster.local 464
+nc -zv ipa01.cluster.local 123
 ```
 
----
+## FreeIPA Client Installation
 
-## Set up Certificate Authority
+```bash
+ipa-client-install
+```
 
-### Step 1: Install easy-rsa
+## Setup Easy-RSA
+
 ```bash
 dnf install easy-rsa -y
-```
-
-### Step 2: Prepare easy-rsa Directory
-```bash
-mkdir /etc/openvpn/easy-rsa
-ln -s /usr/share/easy-rsa /etc/openvpn/easy-rsa
+dnf install nano -y
+mkdir -p /etc/openvpn/easy-rsa
+cp -r /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
 cd /etc/openvpn/easy-rsa
 ```
 
-### Step 3: Initialize the PKI
+Edit `vars` file:
+
 ```bash
-./easy-rsa/3/easyrsa init-pki
+set_var EASYRSA_REQ_COUNTRY    "PT"
+set_var EASYRSA_REQ_PROVINCE   "Minho"
+set_var EASYRSA_REQ_CITY       "Barcelos"
+set_var EASYRSA_REQ_ORG        "IPCA"
+set_var EASYRSA_REQ_EMAIL      "admin@cluster.local"
+set_var EASYRSA_REQ_OU         "IT"
 ```
 
-### Step 4: Build the CA (No Password)
+### Initialize the PKI and Build Certificates
+
 ```bash
-./easy-rsa/3/easyrsa build-ca nopass
+./easyrsa init-pki
+./easyrsa build-ca nopass
+./easyrsa gen-req server nopass
+./easyrsa sign-req server server
+./easyrsa gen-dh
+openvpn --genkey --secret ta.key
 ```
 
----
+### Move Files to OpenVPN Directory
 
-## Create Certificates
-
-### Step 1: Generate Server Certificate
 ```bash
-./easy-rsa/3/easyrsa gen-req server nopass
-./easy-rsa/3/easyrsa sign-req server server
+cp pki/ca.crt /etc/openvpn/
+cp pki/issued/server.crt /etc/openvpn/
+cp pki/private/server.key /etc/openvpn/
+cp pki/dh.pem /etc/openvpn/
+cp ta.key /etc/openvpn/
 ```
 
-### Step 2: Generate Client Certificate (Repeat as Needed)
+## PAM Configuration for OpenVPN
+
+Edit `/etc/pam.d/openvpn`:
+
 ```bash
-./easy-rsa/3/easyrsa gen-req client1 nopass
-./easy-rsa/3/easyrsa sign-req client client1
+auth	required	pam_sss.so forward_pass
+account	required	pam_sss.so
 ```
 
-### Step 3: Generate Diffie-Hellman Parameters
-```bash
-./easy-rsa/3/easyrsa gen-dh
-```
+## SSSD Configuration
 
----
+Edit `/etc/sssd/sssd.conf`:
 
-## Configure OpenVPN
-
-### Step 1: Copy Sample Config
-```bash
-cp /usr/share/doc/openvpn/sample/sample-config-files/server.conf /etc/openvpn
-```
-
-### Step 2: Edit Configuration
-```bash
-vi /etc/openvpn/server.conf
-```
-
-#### Lines to Modify:
 ```ini
-ca /etc/openvpn/easy-rsa/pki/ca.crt
-cert /etc/openvpn/easy-rsa/pki/issued/server.crt
-key /etc/openvpn/easy-rsa/pki/private/server.key  # This file should be kept secret
-dh /etc/openvpn/easy-rsa/pki/dh.pem
+[sssd]
+domains = cluster.local
+services = nss, pam
+config_file_version = 2
+
+[domain/cluster.local]
+id_provider = ipa
+auth_provider = ipa
+chpass_provider = ipa
+ipa_domain = cluster.local
+ipa_server = _srv_, ipa01.cluster.local
+ipa_hostname = ovpn01.cluster.local
+ipa_otp = true
+krb5_use_kdcinfo = false
+cache_credentials = true
+krb5_use_fast = try
+dns_discovery_domain = cluster.local
+enumerate = false
+
+[pam]
+debug_level = 9
 ```
 
-#### Optional TLS-auth (SSL used by default, disable if not used):
-Comment out the following line:
-```ini
-#tls-auth ta.key 0 # This file is secret
+## OpenVPN Server Configuration
+
+Edit `/etc/openvpn/server/server.conf`:
+
+```conf
+port 443
+proto tcp
+dev tun
+float
+tun-mtu 1450
+mssfix 1410
+
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key
+dh /etc/openvpn/dh.pem
+
+server 10.8.0.0 255.255.255.0
+ifconfig-pool-persist /var/log/openvpn/ipp.txt
+push "route 172.16.24.0 255.255.255.0"
+
+plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam.so openvpn
+verify-client-cert none
+username-as-common-name
+
+tls-crypt /etc/openvpn/ta.key 0
+cipher AES-256-GCM
+auth SHA256
+data-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC
+tls-server
+
+log-append /var/log/openvpn/server.log
+verb 7
+status /var/log/openvpn/openvpn-status.log
+
+keepalive 10 120
+persist-key
+persist-tun
+user nobody
+group nobody
+
+auth-retry interact
 ```
 
-Save and exit the editor.
+Set permissions:
 
----
-
-## Configure Firewall
-
-### Step 1: Open OpenVPN Port
 ```bash
-firewall-cmd --add-service=openvpn --permanent
-firewall-cmd --add-masquerade --permanent
+chown root:root /etc/openvpn/server/server.conf
+chmod 600 /etc/openvpn/server/server.conf
+mkdir -p /var/log/openvpn
+chown openvpn:openvpn /var/log/openvpn
+```
+
+## Firewall Configuration
+
+```bash
+firewall-cmd --permanent --add-port=1194/udp
+firewall-cmd --permanent --add-port=443/udp
+firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --reload
 ```
 
----
+## Enable OpenVPN Service
 
-## Configure Routing
-
-### Enable IP Forwarding
 ```bash
-sysctl -w net.ipv4.ip_forward=1
+systemctl enable --now openvpn-server@server
+```
+
+## Keepalived Configuration (Optional HA)
+
+```bash
+dnf install keepalived -y
+mv /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.ori
+```
+
+Edit `/etc/keepalived/keepalived.conf`:
+
+```conf
+vrrp_instance VI_DB {
+    state MASTER
+    interface ens33
+    virtual_router_id 60
+    priority 100
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass Pass12345
+    }
+
+    virtual_ipaddress {
+        172.16.24.1
+    }
+}
+```
+
+Start Keepalived:
+
+```bash
+systemctl enable --now keepalived
 ```
 
 ---
 
-## Start OpenVPN Server
-
-### Recommended for Initial Testing
-```bash
-openvpn /etc/openvpn/server.conf
-```
-
-> OpenVPN should now be running and ready to accept client connections.
+**Author:** António Machado, José Rosa e Pedro Sousa  
+**Organization:** IPCA  
+**Purpose:** VPN with FreeIPA + MFA integration
